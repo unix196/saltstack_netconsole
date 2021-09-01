@@ -1,0 +1,4 @@
+{%- from 'map.yaml' import netconsole %}
+{%- from '_macros/netconsole.jinja' import netconsole_info %}
+# Manage through SaltStack
+options netconsole netconsole={{ netconsole.sender.port }}@{{ netconsole_info.public_ip }}/{{ netconsole_info.public_int }},{{ netconsole.receiver.port }}@{{ netconsole.receiver.ip }}/{{ netconsole_info.mac_gw }}

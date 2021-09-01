@@ -1,0 +1,22 @@
+{%- set ip4_interfaces = salt['grains.get']('ip4_interfaces') -%}
+{%- set default_gw = salt['grains.get']('ip4_gw') -%}
+{# {%- set arp_table = salt['network.arp']() -%}   https://github.com/saltstack/salt/issues/60794 #}
+{%- set get_mac_gw_command = "ip n | grep '" ~ default_gw ~ " ' | awk '{ print $(NF-1) }'" -%}
+{%- set mac_gw = salt['cmd.run'](get_mac_gw_command, python_shell=True) -%}
+{%- set netconsole_info = {'mac_gw': mac_gw,'public_ip': 'empty', 'public_int': 'empty'} -%}
+{#
+{%- for mac, ip in arp_table | dictsort() -%}
+  {%- if ip == default_gw -%}
+  {%- do netconsole_info.update({'mac_gw': mac}) -%}
+  {%- endif -%}
+{%- endfor -%}
+#}
+{# Get public IP and his interface  #}
+{%- for interface, list_ip in ip4_interfaces | dictsort() -%}
+  {%- if list_ip|length != 0 %}  {# some servers have interfaces without ip #}
+    {%- if list_ip[0] | is_ip(options='global') %}
+    {%- do netconsole_info.update({'public_ip': list_ip[0]}) -%}
+    {%- do netconsole_info.update({'public_int': interface}) -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor %}

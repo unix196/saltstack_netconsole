@@ -1,0 +1,10 @@
+{%- load_yaml as netconsole %}
+
+receiver:
+  ip: IP_SYSLOG_NG_SERVER
+  port: 514
+sender:
+  port: 6666
+
+
+{% endload %}
